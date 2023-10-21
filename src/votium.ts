@@ -1,8 +1,9 @@
-import { Bytes, log } from "@graphprotocol/graph-ts";
+import { Bytes, log, BigInt } from "@graphprotocol/graph-ts";
 import { NewIncentive as NewIncentiveEvent } from "../generated/Votium/Votium";
 import { NewReward as NewRewardEvent } from "../generated/VotiumVeCRV/VotiumVeCRV";
 import { Incentive, Round } from "../generated/schema";
 import * as utils from "./common/utils";
+import * as constants from "./common/constants";
 
 export function handleNewIncentive(event: NewIncentiveEvent): void {
   let testEntityId =
@@ -39,13 +40,18 @@ export function handleNewIncentive(event: NewIncentiveEvent): void {
 export function handleNewReward(event: NewRewardEvent): void {
   let roundNumber = utils.getRoundNumber(event.block.timestamp);
   let roundEntity = Round.load(roundNumber.toString());
+  log.warning("[New Reward] Round Number", [roundNumber.toString()]);
   if (!roundEntity) {
     roundEntity = new Round(roundNumber.toString());
     roundEntity.roundNumber = roundNumber.toString();
+    roundEntity.gauges = constants.BIGINT_ZERO;
+    roundEntity.gauges = roundEntity.gauges.plus(BigInt.fromI32(1));
     roundEntity.save();
     log.warning("[ New Round ]: Round Number : {}", [roundNumber.toString()]);
   }
-  roundEntity.gauges += 1;
-  log.warning("[Gauge Added]: Gauge Address", [event.params._gauge.toString()]);
+  roundEntity.gauges = roundEntity.gauges.plus(BigInt.fromI32(1));
+  log.warning("[Gauge Added]: Gauge Address", [
+    event.params._gauge.toHexString(),
+  ]);
   roundEntity.save();
 }

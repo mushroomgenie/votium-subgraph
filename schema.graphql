@@ -19,7 +19,7 @@ type Round @entity @regularPolling {
   roundNumber: String!
 
   " Number of Gauges "
-  gauges: Int!
+  gauges: BigInt!
 }
 
 type Incentive @entity @regularPolling {
