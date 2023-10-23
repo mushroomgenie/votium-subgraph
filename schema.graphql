@@ -19,7 +19,18 @@ type Round @entity @regularPolling {
   roundNumber: String!
 
   " Number of Gauges "
-  gauges: BigInt!
+  gaugesCount: BigInt!
+
+  " Gauges "
+  gauges: [String!]!
+}
+
+type Gauge @entity @regularPolling {
+  " Gauge ID "
+  id: ID!
+
+  " Address "
+  gaugeAddress: String!
 }
 
 type Incentive @entity @regularPolling {
