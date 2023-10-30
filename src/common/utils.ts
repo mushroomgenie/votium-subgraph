@@ -4,7 +4,7 @@ import {
   ROUND_DURATION,
   VOTIUM_GENESIS_ROUND,
 } from "./constants";
-import { BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 export function getCurrentEpoch(timestamp: BigInt): BigInt {
   return timestamp
@@ -27,4 +27,11 @@ export function getRoundNumber(eventTimestamp: BigInt): BigInt {
       .div(BigInt.fromI32(EPOCH_DURATION))
       .minus(BigInt.fromI32(1347));
   }
+}
+
+export function readValue<T>(
+  callResult: ethereum.CallResult<T>,
+  defaultValue: T
+): T {
+  return callResult.reverted ? defaultValue : callResult.value;
 }

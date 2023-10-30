@@ -19,6 +19,8 @@ dataSources:
       abis:
         - name: Votium
           file: ./abis/Votium.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: NewIncentive(uint256,address,uint256,indexed uint256,indexed
             address,uint256,address[],indexed address,bool)
@@ -41,6 +43,8 @@ dataSources:
       abis:
         - name: Bribe
           file: ./abis/Bribe.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: Bribed(address,uint256,indexed bytes32,uint256)
           handler: handleBribed
@@ -62,6 +66,8 @@ dataSources:
       abis:
         - name: VotiumVeCRV
           file: ./abis/VotiumVeCRV.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: NewReward(indexed address,uint256,indexed uint256,indexed address)
           handler: handleNewReward

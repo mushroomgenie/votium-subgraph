@@ -23,6 +23,20 @@ type Round @entity @regularPolling {
 
   " Gauges "
   gauges: [String!]!
+
+  " Tokens "
+  tokens: [Token!]!
+}
+
+type Token @entity @regularPolling {
+  " New Token "
+  id: ID!
+
+  " Symbol "
+  symbol: String!
+
+  " Amount "
+  amount: BigInt!
 }
 
 type Gauge @entity @regularPolling {
