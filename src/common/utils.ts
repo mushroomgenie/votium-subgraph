@@ -3,8 +3,11 @@ import {
   EPOCH_DURATION,
   ROUND_DURATION,
   VOTIUM_GENESIS_ROUND,
+  DENOMINATOR,
+  CONVEX_FEES,
+  CURVE_FEES,
 } from "./constants";
-import { BigInt, ethereum } from "@graphprotocol/graph-ts";
+import { BigDecimal, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 export function getCurrentEpoch(timestamp: BigInt): BigInt {
   return timestamp
@@ -34,4 +37,15 @@ export function readValue<T>(
   defaultValue: T
 ): T {
   return callResult.reverted ? defaultValue : callResult.value;
+}
+
+export function calculateRevenue(amount: BigInt, fees: BigInt): BigDecimal {
+  const totalAmount = amount
+    .toBigDecimal()
+    .times(DENOMINATOR)
+    .div(DENOMINATOR.minus(fees.toBigDecimal()));
+  const revenue = totalAmount.minus(
+    totalAmount.times(fees.toBigDecimal()).div(DENOMINATOR)
+  );
+  return revenue;
 }

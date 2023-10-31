@@ -1,10 +1,10 @@
-import { Bytes, log, BigInt } from "@graphprotocol/graph-ts";
+import { log, BigInt, dataSource } from "@graphprotocol/graph-ts";
 import { NewIncentive as NewIncentiveEvent } from "../generated/Votium/Votium";
-import { ERC20 as ERC20Contract } from "../generated/Votium/ERC20";
 import { NewReward as NewRewardEvent } from "../generated/VotiumVeCRV/VotiumVeCRV";
 import { Incentive, Round } from "../generated/schema";
 import { getOrCreateRound, getOrCreateToken } from "./common/initializers";
-import { readValue } from "./common/utils";
+import { calculateRevenue } from "./common/utils";
+import * as constants from "./common/constants";
 
 export function handleNewIncentive(event: NewIncentiveEvent): void {
   const round = getOrCreateRound(event.block.timestamp);
@@ -29,14 +29,10 @@ export function handleNewIncentive(event: NewIncentiveEvent): void {
     tokenEntity.amount = tokenEntity.amount.plus(event.params._amount);
     tokenEntity.save();
   }
-  // const token = ERC20Contract.bind(event.params._token);
-  // const symbol = readValue<String>(token.try_symbol(), "");
-  // if (!round.tokens.includes(symbol.toString())) {
-  //   let tokens = round.tokens;
-  //   tokens.push(symbol.toString());
-  //   round.tokens = tokens;
-  //   round.save();
-  // }
+  round.convexRevenue = round.convexRevenue.plus(
+    calculateRevenue(event.params._amount, constants.CONVEX_FEES)
+  );
+  round.save();
   let testEntityId =
     event.transaction.hash.toString() + "-" + event.params._round.toString();
   let testEntity = Incentive.load(testEntityId);
@@ -92,12 +88,8 @@ export function handleNewReward(event: NewRewardEvent): void {
     tokenEntity.amount = tokenEntity.amount.plus(event.params._amount);
     tokenEntity.save();
   }
-  // const token = ERC20Contract.bind(event.params._token);
-  // const symbol = readValue<String>(token.try_symbol(), "");
-  // if (!round.tokens.includes(symbol.toString())) {
-  //   let tokens = round.tokens;
-  //   tokens.push(symbol.toString());
-  //   round.tokens = tokens;
-  //   round.save();
-  // }
+  round.curveRevenue = round.curveRevenue.plus(
+    calculateRevenue(event.params._amount, constants.CURVE_FEES)
+  );
+  round.save();
 }

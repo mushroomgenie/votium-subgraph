@@ -26,6 +26,12 @@ type Round @entity @regularPolling {
 
   " Tokens "
   tokens: [Token!]!
+
+  " Revenue Curve"
+  curveRevenue: BigDecimal!
+
+  " Revenue Convex "
+  convexRevenue: BigDecimal!
 }
 
 type Token @entity @regularPolling {

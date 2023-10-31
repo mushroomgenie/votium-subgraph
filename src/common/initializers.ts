@@ -13,6 +13,8 @@ export function getOrCreateRound(timestamp: BigInt): Round {
     roundEntity.gaugesCount = constants.BIGINT_ZERO;
     roundEntity.gauges = [];
     roundEntity.tokens = [];
+    roundEntity.convexRevenue = constants.BIGDECIMAL_ZERO;
+    roundEntity.curveRevenue = constants.BIGDECIMAL_ZERO;
     roundEntity.save();
     log.warning("[ New Round ]: Round Number : {}", [roundNumber.toString()]);
   }

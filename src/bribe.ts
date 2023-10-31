@@ -1,9 +1,10 @@
-import { BigInt, log } from "@graphprotocol/graph-ts";
+import { BigInt, dataSource, log } from "@graphprotocol/graph-ts";
 import { Bribed as BribeEvent } from "../generated/Bribe/Bribe";
 import { ERC20 as ERC20Contract } from "../generated/Votium/ERC20";
 import { Bribe } from "../generated/schema";
 import { getOrCreateRound, getOrCreateToken } from "./common/initializers";
-import { readValue } from "./common/utils";
+import { calculateRevenue, readValue } from "./common/utils";
+import * as constants from "./common/constants";
 
 export function handleBribed(event: BribeEvent): void {
   const round = getOrCreateRound(event.block.timestamp);
@@ -33,14 +34,10 @@ export function handleBribed(event: BribeEvent): void {
     tokenEntity.amount = tokenEntity.amount.plus(event.params._amount);
     tokenEntity.save();
   }
-  // const token = ERC20Contract.bind(event.params._token);
-  // const symbol = readValue<String>(token.try_symbol(), "");
-  // if (!round.tokens.includes(symbol.toString())) {
-  //   let tokens = round.tokens;
-  //   tokens.push(symbol.toString());
-  //   round.tokens = tokens;
-  //   round.save();
-  // }
+  round.convexRevenue = round.convexRevenue.plus(
+    calculateRevenue(event.params._amount, constants.CONVEX_FEES)
+  );
+  round.save();
   let testEntityId =
     event.transaction.hash.toString() + "-" + event.params._proposal.toString();
   let testEntity = Bribe.load(testEntityId);
